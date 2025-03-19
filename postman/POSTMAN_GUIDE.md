@@ -1,0 +1,111 @@
+# Guide to Using the User Management API Postman Collection
+
+This guide explains how to use the Postman collection for testing the User Management API.
+
+## Importing the Collection
+
+1. Open Postman
+2. Click on "Import" button
+3. Select the file `User_Management_API.postman_collection.json`
+4. The collection will be imported with all pre-configured requests
+
+## Testing Workflow
+
+### Step 1: Start the Spring Boot Application
+
+Make sure your Spring Boot application is running on `http://localhost:8080` before testing the API.
+
+### Step 2: Authentication
+
+The API uses JWT authentication. To test protected endpoints, you need to:
+
+1. **Login or Register first to get a JWT token**:
+   - Use "Login as Admin" request with default credentials (username: `admin`, password: `admin123`)
+   - Or register a new user with "Register User" request
+   - Or register a new admin with "Register Admin" request
+
+2. **Set the JWT token in the Postman environment variable**:
+   - After successful login, you'll receive a response containing the JWT token
+   - Copy the token value (without the "Bearer " prefix)
+   - In Postman, click on the "Environment quick look" button (the eye icon in the top right)
+   - Set the appropriate variable (`userToken`, `adminToken`, or `modToken`) with the token value
+   - The requests are pre-configured to use these variables in the Authorization header
+
+### Step 3: Test the Endpoints
+
+#### Authentication Endpoints
+- **Register User**: Creates a new user with ROLE_USER
+- **Register Admin**: Creates a new user with ROLE_ADMIN
+- **Login as User**: Authenticates a regular user and returns a JWT token
+- **Login as Admin**: Authenticates an admin user and returns a JWT token
+
+#### User Management Endpoints
+- **Get All Users**: Admin only - retrieves all users
+- **Get User by ID**: Admin or same user - retrieves user by ID
+- **Get Current User**: Any authenticated user - retrieves the current user's profile
+- **Update User**: Admin or same user - updates user information
+- **Update User Roles**: Admin only - updates a user's roles
+- **Change Password**: Admin or same user - changes user password
+- **Delete User**: Admin only - deletes a user
+
+#### Test Endpoints
+- **Public Content**: Accessible to anyone
+- **User Content**: Accessible to users with ROLE_USER
+- **Moderator Content**: Accessible to users with ROLE_MODERATOR
+- **Admin Content**: Accessible to users with ROLE_ADMIN
+
+## Request Body Examples
+
+### Register User
+```json
+{
+  "username": "testuser",
+  "email": "testuser@example.com",
+  "password": "password123",
+  "firstName": "Test",
+  "lastName": "User",
+  "roles": ["ROLE_USER"]
+}
+```
+
+### Login
+```json
+{
+  "username": "testuser",
+  "password": "password123"
+}
+```
+
+### Update User
+```json
+{
+  "firstName": "Updated",
+  "lastName": "User",
+  "email": "updated-user@example.com"
+}
+```
+
+### Change Password
+```json
+{
+  "currentPassword": "password123",
+  "newPassword": "newPassword123",
+  "confirmPassword": "newPassword123"
+}
+```
+
+### Update User Roles
+```json
+{
+  "roles": ["ROLE_USER", "ROLE_MODERATOR"]
+}
+```
+
+## Tips for Testing
+
+1. Always start with authentication to get a valid JWT token
+2. Store the token in the environment variables
+3. User ID values in URLs (like `/users/1`) might need to be adjusted based on your database
+4. The default admin user is created automatically on startup
+5. Test the role-based authorization by using different tokens (user, moderator, admin)
+6. Check error responses when testing validation or authorization
