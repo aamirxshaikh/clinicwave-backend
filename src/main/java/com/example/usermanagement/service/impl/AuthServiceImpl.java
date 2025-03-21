@@ -1,5 +1,6 @@
 package com.example.usermanagement.service.impl;
 
+import com.example.usermanagement.exception.InvalidRoleException;
 import com.example.usermanagement.model.response.JwtResponse;
 import com.example.usermanagement.model.request.LoginRequest;
 import com.example.usermanagement.model.response.MessageResponse;
@@ -98,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
           roles.add(userRole);
         } catch (IllegalArgumentException e) {
           log.error("Invalid role name: {}", role);
-          throw new RuntimeException("Error: Role " + role + " is not valid.");
+          throw new InvalidRoleException(role);
         }
       });
     }

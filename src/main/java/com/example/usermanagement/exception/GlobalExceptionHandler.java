@@ -15,6 +15,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RestControllerAdvice
@@ -34,6 +35,54 @@ public class GlobalExceptionHandler {
             .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(InvalidRoleException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidRoleException(
+          InvalidRoleException ex, WebRequest request) {
+
+    log.error("Invalid role exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(CurrentPasswordInvalidException.class)
+  public ResponseEntity<ErrorResponse> handleCurrentPasswordInvalidException(
+          CurrentPasswordInvalidException ex, WebRequest request) {
+
+    log.error("Current password invalid exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .statusCode(HttpStatus.UNAUTHORIZED.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler(PasswordMismatchException.class)
+  public ResponseEntity<ErrorResponse> handlePasswordMismatchException(
+          PasswordMismatchException ex, WebRequest request) {
+
+    log.error("Password mismatch exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+            .statusCode(HttpStatus.UNAUTHORIZED.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
   }
 
   @ExceptionHandler(BadCredentialsException.class)

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,6 +19,7 @@ public class ErrorResponse {
   private String status;
   private Integer statusCode;
   private String message;
-  private List<String> errors;
+  @Builder.Default
+  private List<String> errors = new ArrayList<>();
   private String path;
 }

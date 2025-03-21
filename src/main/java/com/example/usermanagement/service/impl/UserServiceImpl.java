@@ -1,5 +1,7 @@
 package com.example.usermanagement.service.impl;
 
+import com.example.usermanagement.exception.CurrentPasswordInvalidException;
+import com.example.usermanagement.exception.PasswordMismatchException;
 import com.example.usermanagement.exception.ResourceNotFoundException;
 import com.example.usermanagement.mapper.UserMapper;
 import com.example.usermanagement.model.dto.UserDto;
@@ -114,11 +116,11 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
 
     if (!encoder.matches(changePasswordRequest.currentPassword(), user.getPassword())) {
-      throw new IllegalArgumentException("Current password is incorrect");
+      throw new CurrentPasswordInvalidException();
     }
 
     if (!changePasswordRequest.newPassword().equals(changePasswordRequest.confirmPassword())) {
-      throw new IllegalArgumentException("New password and confirm password do not match");
+      throw new PasswordMismatchException();
     }
 
     user.setPassword(encoder.encode(changePasswordRequest.newPassword()));
