@@ -15,7 +15,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @RestControllerAdvice
@@ -83,6 +82,22 @@ public class GlobalExceptionHandler {
             .build();
 
     return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+  }
+
+  @ExceptionHandler(RateLimitExceededException.class)
+  public ResponseEntity<ErrorResponse> handleRateLimitExceededException(
+          RateLimitExceededException ex, WebRequest request) {
+
+    log.error("Rate limit exceeded exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.TOO_MANY_REQUESTS.getReasonPhrase())
+            .statusCode(HttpStatus.TOO_MANY_REQUESTS.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
   }
 
   @ExceptionHandler(BadCredentialsException.class)
