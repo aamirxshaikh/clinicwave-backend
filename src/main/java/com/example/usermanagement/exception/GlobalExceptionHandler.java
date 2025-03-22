@@ -15,6 +15,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @RestControllerAdvice
@@ -176,6 +177,7 @@ public class GlobalExceptionHandler {
             .status(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
             .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
             .message("An unexpected error occurred")
+            .errors(Collections.singletonList(ex.getMessage()))
             .path(getPath(request))
             .build();
 
