@@ -3,6 +3,7 @@ package com.example.usermanagement.aop;
 import com.example.usermanagement.exception.RateLimitExceededException;
 import com.example.usermanagement.service.RateLimiterService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -23,21 +24,39 @@ public class RateLimitingAspect {
 
   @Around("execution(* com.example.usermanagement.controller.AuthController.authenticateUser(..))")
   public Object rateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
+    // Get request and response
+    ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    HttpServletRequest request = attributes.getRequest();
+    HttpServletResponse response = attributes.getResponse();
+
     // Get client IP address
-    HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
     String clientIp = getClientIP(request);
 
     // Rate limit key
     String key = "rate:register:" + clientIp;
 
     if (rateLimiterService.isLimitExceeded(key)) {
+      // Add rate limit headers when the limit is exceeded
+      addRateLimitHeaders(response, key);
+
       Duration timeToReset = rateLimiterService.getTimeToReset(key);
       log.warn("Rate limit exceeded for client IP: {}. Try again in {} seconds.", clientIp, timeToReset.toSeconds());
       throw new RateLimitExceededException("Too many registration attempts. Try again in " +
               timeToReset.toSeconds() + " seconds.");
     }
 
+    // Add rate limit headers to successful responses
+    addRateLimitHeaders(response, key);
+
     return joinPoint.proceed();
+  }
+
+  private void addRateLimitHeaders(HttpServletResponse response, String key) {
+    Duration timeToReset = rateLimiterService.getTimeToReset(key);
+    response.addHeader("X-RateLimit-Limit", String.valueOf(rateLimiterService.getMaxAttempts()));
+    response.addHeader("X-RateLimit-Remaining", String.valueOf(rateLimiterService.getAttemptsRemaining(key)));
+    response.addHeader("X-RateLimit-Reset", String.valueOf(timeToReset));
+    response.addHeader("Retry-After", String.valueOf(timeToReset));
   }
 
   private String getClientIP(HttpServletRequest request) {
