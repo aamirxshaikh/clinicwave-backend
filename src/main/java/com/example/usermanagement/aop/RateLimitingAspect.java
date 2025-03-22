@@ -26,6 +26,12 @@ public class RateLimitingAspect {
   public Object rateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
     // Get request and response
     ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+
+    if (attributes == null) {
+      log.warn("RequestContextHolder returned null attributes - cannot apply rate limiting");
+      return joinPoint.proceed(); // Continue without rate limiting
+    }
+
     HttpServletRequest request = attributes.getRequest();
     HttpServletResponse response = attributes.getResponse();
 
@@ -37,7 +43,7 @@ public class RateLimitingAspect {
 
     if (rateLimiterService.isLimitExceeded(key)) {
       // Add rate limit headers when the limit is exceeded
-      addRateLimitHeaders(response, key);
+      if (response != null) addRateLimitHeaders(response, key);
 
       Duration timeToReset = rateLimiterService.getTimeToReset(key);
       log.warn("Rate limit exceeded for client IP: {}. Try again in {} seconds.", clientIp, timeToReset.toSeconds());
@@ -46,7 +52,7 @@ public class RateLimitingAspect {
     }
 
     // Add rate limit headers to successful responses
-    addRateLimitHeaders(response, key);
+    if (response != null) addRateLimitHeaders(response, key);
 
     return joinPoint.proceed();
   }

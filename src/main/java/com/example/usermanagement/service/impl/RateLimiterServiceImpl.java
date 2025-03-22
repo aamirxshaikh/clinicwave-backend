@@ -6,6 +6,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -18,11 +19,11 @@ public class RateLimiterServiceImpl implements RateLimiterService {
   @Override
   public boolean isLimitExceeded(String key) {
     Long attempts = redisTemplate.opsForValue().increment(key, 1);
-    if (attempts == 1) {
+    if (attempts != null && attempts == 1) {
       // Set expiration time for the key if it is a new key
       redisTemplate.expire(key, WINDOW_MINUTES, TimeUnit.MINUTES);
     }
-    return attempts > MAX_ATTEMPTS;
+    return attempts != null && attempts > MAX_ATTEMPTS;
   }
 
   @Override
@@ -37,10 +38,11 @@ public class RateLimiterServiceImpl implements RateLimiterService {
   @Override
   public Duration getTimeToReset(String key) {
     Long ttl = redisTemplate.getExpire(key, TimeUnit.SECONDS);
-    if (ttl == null || ttl <= 0) {
-      return Duration.ZERO;
-    }
-    return Duration.ofSeconds(ttl);
+
+    return Optional.of(ttl)
+            .filter(t -> t > 0)
+            .map(Duration::ofSeconds)
+            .orElse(Duration.ZERO);
   }
 
   @Override
