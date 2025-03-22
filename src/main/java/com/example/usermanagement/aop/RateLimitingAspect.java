@@ -47,7 +47,7 @@ public class RateLimitingAspect {
 
       Duration timeToReset = rateLimiterService.getTimeToReset(key);
       log.warn("Rate limit exceeded for client IP: {}. Try again in {} seconds.", clientIp, timeToReset.toSeconds());
-      throw new RateLimitExceededException("Too many registration attempts. Try again in " +
+      throw new RateLimitExceededException("Too many login attempts. Try again in " +
               timeToReset.toSeconds() + " seconds.");
     }
 

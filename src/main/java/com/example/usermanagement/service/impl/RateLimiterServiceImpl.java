@@ -19,19 +19,15 @@ public class RateLimiterServiceImpl implements RateLimiterService {
   @Override
   public boolean isLimitExceeded(String key) {
     Long attempts = redisTemplate.opsForValue().increment(key, 1);
-    if (attempts != null && attempts == 1) {
-      // Set expiration time for the key if it is a new key
-      redisTemplate.expire(key, WINDOW_MINUTES, TimeUnit.MINUTES);
-    }
+    if (attempts != null && attempts == 1)
+      redisTemplate.expire(key, WINDOW_MINUTES, TimeUnit.MINUTES); // Set expiration time for the key if it is a new key
     return attempts != null && attempts > MAX_ATTEMPTS;
   }
 
   @Override
   public long getAttemptsRemaining(String key) {
     Long attempts = redisTemplate.opsForValue().get(key);
-    if (attempts == null) {
-      return MAX_ATTEMPTS;
-    }
+    if (attempts == null) return MAX_ATTEMPTS;
     return Math.max(0, MAX_ATTEMPTS - attempts);
   }
 
