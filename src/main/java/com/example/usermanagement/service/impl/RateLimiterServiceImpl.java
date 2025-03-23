@@ -13,22 +13,20 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class RateLimiterServiceImpl implements RateLimiterService {
   private final RedisTemplate<String, Long> redisTemplate;
-  private static final int MAX_ATTEMPTS = 5;
-  private static final long WINDOW_MINUTES = 1;
 
   @Override
-  public boolean isLimitExceeded(String key) {
+  public boolean isLimitExceeded(String key, int maxAttempts, long duration, TimeUnit timeUnit) {
     Long attempts = redisTemplate.opsForValue().increment(key, 1);
     if (attempts != null && attempts == 1)
-      redisTemplate.expire(key, WINDOW_MINUTES, TimeUnit.MINUTES); // Set expiration time for the key if it is a new key
-    return attempts != null && attempts > MAX_ATTEMPTS;
+      redisTemplate.expire(key, duration, timeUnit); // Set expiration time for the key if it is a new key
+    return attempts != null && attempts > maxAttempts;
   }
 
   @Override
-  public long getAttemptsRemaining(String key) {
+  public long getAttemptsRemaining(String key, int limit) {
     Long attempts = redisTemplate.opsForValue().get(key);
-    if (attempts == null) return MAX_ATTEMPTS;
-    return Math.max(0, MAX_ATTEMPTS - attempts);
+    if (attempts == null) return limit;
+    return Math.max(0, limit - attempts);
   }
 
   @Override
@@ -39,10 +37,5 @@ public class RateLimiterServiceImpl implements RateLimiterService {
             .filter(t -> t > 0)
             .map(Duration::ofSeconds)
             .orElse(Duration.ZERO);
-  }
-
-  @Override
-  public int getMaxAttempts() {
-    return MAX_ATTEMPTS;
   }
 }

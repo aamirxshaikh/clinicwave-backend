@@ -1,13 +1,12 @@
 package com.example.usermanagement.service;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public interface RateLimiterService {
-  boolean isLimitExceeded(String key);
+  boolean isLimitExceeded(String key, int maxAttempts, long duration, TimeUnit timeUnit);
 
-  long getAttemptsRemaining(String key);
+  long getAttemptsRemaining(String key, int limit);
 
   Duration getTimeToReset(String key);
-
-  int getMaxAttempts();
 }

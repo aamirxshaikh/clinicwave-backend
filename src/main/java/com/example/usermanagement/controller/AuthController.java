@@ -1,5 +1,6 @@
 package com.example.usermanagement.controller;
 
+import com.example.usermanagement.annotation.RateLimit;
 import com.example.usermanagement.model.request.LoginRequest;
 import com.example.usermanagement.model.request.RegisterRequest;
 import com.example.usermanagement.model.response.JwtResponse;
@@ -20,6 +21,7 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/login")
+  @RateLimit(prefix = "rate:authenticate")
   public ResponseEntity<JwtResponse> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     return ResponseEntity.ok(authService.authenticateUser(loginRequest));
   }
