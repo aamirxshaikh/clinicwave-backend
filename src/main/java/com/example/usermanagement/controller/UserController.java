@@ -1,5 +1,6 @@
 package com.example.usermanagement.controller;
 
+import com.example.usermanagement.annotation.RateLimit;
 import com.example.usermanagement.model.dto.UserDto;
 import com.example.usermanagement.model.request.ChangePasswordRequest;
 import com.example.usermanagement.model.request.UpdateUserRequest;
@@ -38,6 +39,7 @@ public class UserController {
 
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN') or @securityExpressionHandler.isCurrentUser(#id)")
+  @RateLimit(duration = 10, prefix = "rate:update", useAuthenticatedUser = true)
   public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
     return ResponseEntity.ok(userService.updateUser(id, updateUserRequest));
   }
@@ -51,6 +53,7 @@ public class UserController {
 
   @PostMapping("/{id}/change-password")
   @PreAuthorize("hasRole('ADMIN') or @securityExpressionHandler.isCurrentUser(#id)")
+  @RateLimit(limit = 3, duration = 10, prefix = "rate:change-password", useAuthenticatedUser = true)
   public ResponseEntity<UserDto> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
     return ResponseEntity.ok(userService.changePassword(id, changePasswordRequest));
   }

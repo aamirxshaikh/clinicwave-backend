@@ -27,6 +27,7 @@ public class AuthController {
   }
 
   @PostMapping("/register")
+  @RateLimit(duration = 10, prefix = "rate:register")
   public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
     return ResponseEntity.ok(authService.registerUser(registerRequest));
   }
