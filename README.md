@@ -55,6 +55,11 @@ Example:
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
 
+### Security Documentation
+
+- [Security Implementation](./docs/SECURITY.md) - Overview of the security architecture
+- [Security Flow](./docs/SECURITY_FLOW.md) - Detailed request flow through security components
+
 ## Running the Application
 
 1. Clone the repository
@@ -134,3 +139,8 @@ Content-Type: application/json
   "confirmPassword": "newPassword123"
 }
 ```
+
+### Postman Documentation
+
+- [Postman Guide](./postman/POSTMAN_GUIDE.md) - Contains instructions on how to import and use the Postman collection for testing API endpoints.
+- [Postman Collection](./postman/User_Management_API.postman_collection.json) - A Postman collection with pre-configured API requests for easy testing of the User Management Service.
