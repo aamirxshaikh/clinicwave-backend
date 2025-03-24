@@ -89,8 +89,8 @@ This class provides a custom implementation of `AuthenticationEntryPoint` to han
 
 This service implements Spring Security's `UserDetailsService` interface to:
 
-- Load user authentication data from your database
-- Convert your custom `User` entity to Spring Security's `UserDetails` object
+- Load user authentication data from the database
+- Convert custom `User` entity to Spring Security's `UserDetails` object
 - Handle user not found scenarios with appropriate exceptions
 
 ### UserDetailsImpl
