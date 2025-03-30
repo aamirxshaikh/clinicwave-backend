@@ -33,3 +33,6 @@ build/
 .vscode/
 
 user-management.zip
+
+# Secret file
+src/main/resources/secrets.properties
