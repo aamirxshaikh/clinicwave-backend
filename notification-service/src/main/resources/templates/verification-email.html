@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Email</title>
+</head>
+<body>
+<h2>Welcome to Our Platform!</h2>
+<p>Thank you for registering. Please use the following code to verify your email address:</p>
+
+<div style="background-color: #f4f4f4; padding: 20px; text-align: center; margin: 20px 0; font-size: 24px; font-weight: bold; letter-spacing: 5px;">
+    <span th:text="${code}">123456</span>
+</div>
+
+<p>This code will expire in 10 minutes.</p>
+<p>If you didn't create an account, you can safely ignore this email.</p>
+<p>Best regards,<br>Your Team</p>
+</body>
+</html> 
