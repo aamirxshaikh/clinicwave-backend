@@ -18,8 +18,7 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 - Spring Boot 3.2.4
 - Spring Security
 - Spring Data JPA
-- H2 Database (for development)
-- MySQL support
+- PostgreSQL
 - JWT for stateless authentication
 - Maven
 
@@ -48,9 +47,11 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 
 ## Security
 
-The application uses Spring Security with JWT for authentication. Each request to a protected endpoint must include an Authorization header with a valid JWT token.
+The application uses Spring Security with JWT for authentication. Each request to a protected endpoint must include an
+Authorization header with a valid JWT token.
 
 Example:
+
 ```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
@@ -72,15 +73,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ## Default Admin User
 
 A default admin user is created on startup:
+
 - Username: admin
 - Password: admin123
 
-## H2 Database Console
+## PostgreSQL Database
 
-The H2 database console is available at `/api/v1/h2-console` with the following credentials:
-- JDBC URL: jdbc:h2:mem:userdb
-- Username: sa
-- Password: password
+The application uses PostgreSQL as the database. You can configure the database connection in
+`src/main/resources/application.properties`.
+
+- JDBC URL: `jdbc:postgresql://localhost:5432/user_management_db`
+- Username: postgres
+- Password: postgres
 
 ## API Request Examples
 
@@ -142,5 +146,7 @@ Content-Type: application/json
 
 ### Postman Documentation
 
-- [Postman Guide](./postman/POSTMAN_GUIDE.md) - Contains instructions on how to import and use the Postman collection for testing API endpoints.
-- [Postman Collection](./postman/Clinicwave_API.postman_collection.json) - A Postman collection with pre-configured API requests for easy testing of the User Management Service.
+- [Postman Guide](./postman/POSTMAN_GUIDE.md) - Contains instructions on how to import and use the Postman collection
+  for testing API endpoints.
+- [Postman Collection](./postman/Clinicwave_API.postman_collection.json) - A Postman collection with pre-configured API
+  requests for easy testing of the User Management Service.
