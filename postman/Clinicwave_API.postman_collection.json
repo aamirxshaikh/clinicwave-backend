@@ -495,7 +495,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"testuser@example.com\",\n    \"code\": \"940086\"\n}",
+							"raw": "{\n    \"email\": \"john.doe@example.com\",\n    \"code\": \"756785\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -540,7 +540,7 @@
 							}
 						],
 						"url": {
-							"raw": "{{baseUrl}}/auth/verify/resend?email=testuser@example.com",
+							"raw": "{{baseUrl}}/auth/verify/resend?email=john.doe@example.com",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -552,7 +552,7 @@
 							"query": [
 								{
 									"key": "email",
-									"value": "testuser@example.com"
+									"value": "john.doe@example.com"
 								}
 							]
 						},
