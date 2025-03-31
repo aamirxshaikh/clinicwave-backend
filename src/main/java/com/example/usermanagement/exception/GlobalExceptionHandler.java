@@ -101,6 +101,86 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
   }
 
+  @ExceptionHandler(EmailAlreadyVerifiedException.class)
+  public ResponseEntity<ErrorResponse> handleEmailAlreadyVerifiedException(
+          EmailAlreadyVerifiedException ex, WebRequest request) {
+
+    log.error("Email already verified exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.CONFLICT.getReasonPhrase())
+            .statusCode(HttpStatus.CONFLICT.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(InvalidVerificationCodeException.class)
+  public ResponseEntity<ErrorResponse> handleInvalidVerificationCodeException(
+          InvalidVerificationCodeException ex, WebRequest request) {
+
+    log.error("Invalid verification code exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.NOT_FOUND.getReasonPhrase())
+            .statusCode(HttpStatus.NOT_FOUND.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(VerificationCodeAlreadyUsedException.class)
+  public ResponseEntity<ErrorResponse> handleVerificationCodeAlreadyUsedException(
+          VerificationCodeAlreadyUsedException ex, WebRequest request) {
+
+    log.error("Verification code already used exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.BAD_REQUEST.getReasonPhrase())
+            .statusCode(HttpStatus.BAD_REQUEST.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(VerificationCodeExpiredException.class)
+  public ResponseEntity<ErrorResponse> handleVerificationCodeExpiredException(
+          VerificationCodeExpiredException ex, WebRequest request) {
+
+    log.error("Verification code expired exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.GONE.getReasonPhrase())
+            .statusCode(HttpStatus.GONE.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.GONE);
+  }
+
+  @ExceptionHandler(EmailSendingException.class)
+  public ResponseEntity<ErrorResponse> handleEmailSendingException(
+          EmailSendingException ex, WebRequest request) {
+
+    log.error("Email sending exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.SERVICE_UNAVAILABLE.getReasonPhrase())
+            .statusCode(HttpStatus.SERVICE_UNAVAILABLE.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+  }
+
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<ErrorResponse> handleBadCredentialsException(
           BadCredentialsException ex, WebRequest request) {

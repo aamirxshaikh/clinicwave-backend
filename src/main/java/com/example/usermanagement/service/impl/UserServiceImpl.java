@@ -12,6 +12,7 @@ import com.example.usermanagement.model.request.ChangePasswordRequest;
 import com.example.usermanagement.model.request.UpdateUserRequest;
 import com.example.usermanagement.repository.RoleRepository;
 import com.example.usermanagement.repository.UserRepository;
+import com.example.usermanagement.repository.VerificationCodeRepository;
 import com.example.usermanagement.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final VerificationCodeRepository verificationCodeRepository;
   private final PasswordEncoder encoder;
   private final UserMapper userMapper;
 
@@ -102,11 +104,12 @@ public class UserServiceImpl implements UserService {
   @Override
   @Transactional
   public void deleteUser(Long id) {
-    if (userRepository.existsById(id)) {
-      userRepository.deleteById(id);
-    } else {
-      throw new ResourceNotFoundException("User", "id", id);
-    }
+    User user = userRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+    // Delete associated verification codes then delete the user
+    verificationCodeRepository.deleteByUserId(user.getId());
+    userRepository.delete(user);
   }
 
   @Override
