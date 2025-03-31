@@ -1,6 +1,9 @@
 package com.example.usermanagement.security;
 
-import com.example.usermanagement.security.service.UserDetailsServiceImpl;
+import com.example.usermanagement.exception.ResourceNotFoundException;
+import com.example.usermanagement.model.entity.User;
+import com.example.usermanagement.repository.UserRepository;
+import com.example.usermanagement.security.service.UserDetailsImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +24,7 @@ import java.io.IOException;
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
   private final JwtUtils jwtUtils;
-  private final UserDetailsServiceImpl userDetailsService;
+  private final UserRepository userRepository;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -30,8 +33,17 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       String jwt = jwtUtils.parseJwt(request);
       if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        // Check if the user is verified
+        if (!user.isEmailVerified()) {
+          response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+          response.getWriter().write("Please verify your email address");
+          return;
+        }
+
+        UserDetails userDetails = UserDetailsImpl.build(user);
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         userDetails,
