@@ -13,7 +13,7 @@ This project consists of two main microservices:
 
 The system follows a microservices architecture where each service is responsible for a specific domain of functionality:
 
-![clinicwave-ecosystem-architecture.drawio.png](images/clinicwave-ecosystem-architecture.drawio.png)
+![clinicwave-ecosystem-architecture.jpg](images/clinicwave-ecosystem-architecture.jpg)
 
 ### User Management Service
 - Handles user authentication and authorization
