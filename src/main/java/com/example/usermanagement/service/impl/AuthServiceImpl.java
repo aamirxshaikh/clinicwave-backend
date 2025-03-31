@@ -13,6 +13,7 @@ import com.example.usermanagement.repository.UserRepository;
 import com.example.usermanagement.security.JwtUtils;
 import com.example.usermanagement.security.service.UserDetailsImpl;
 import com.example.usermanagement.service.AuthService;
+import com.example.usermanagement.service.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
   private final AuthenticationManager authenticationManager;
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final EmailVerificationService emailVerificationService;
   private final PasswordEncoder encoder;
   private final JwtUtils jwtUtils;
 
@@ -82,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
             .firstName(registerRequest.firstName())
             .lastName(registerRequest.lastName())
             .enabled(true)
+            .emailVerified(false)
             .build();
 
     Set<String> strRoles = registerRequest.roles();
@@ -107,6 +110,9 @@ public class AuthServiceImpl implements AuthService {
     user.setRoles(roles);
     userRepository.save(user);
 
-    return new MessageResponse("User registered successfully!");
+    // Send verification email
+    emailVerificationService.sendVerificationEmail(user.getEmail());
+
+    return new MessageResponse("User registered successfully! Please check your email to verify your account.");
   }
 }
