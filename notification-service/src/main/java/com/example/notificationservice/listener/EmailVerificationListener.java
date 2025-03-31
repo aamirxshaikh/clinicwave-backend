@@ -15,8 +15,8 @@ public class EmailVerificationListener {
 
   @RabbitListener(queues = "${rabbitmq.email-verification-queue}")
   public void handleEmailVerification(EmailRequest emailRequest) {
-    log.info("Received email verification request for {}", emailRequest.getTo());
-    emailService.sendVerificationEmail(emailRequest.getTo(), emailRequest.getCode());
-    log.info("Processed email verification request for {}", emailRequest.getTo());
+    log.info("Received email verification request for {}", emailRequest.to());
+    emailService.sendVerificationEmail(emailRequest.to(), emailRequest.code());
+    log.info("Processed email verification request for {}", emailRequest.to());
   }
 }
