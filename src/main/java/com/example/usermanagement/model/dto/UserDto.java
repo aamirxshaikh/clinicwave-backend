@@ -9,6 +9,7 @@ public record UserDto(
         String firstName,
         String lastName,
         Set<String> roles,
-        boolean enabled
+        boolean enabled,
+        boolean emailVerified
 ) {
 }

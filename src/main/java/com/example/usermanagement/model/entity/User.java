@@ -51,4 +51,9 @@ public class User extends Audit {
           joinColumns = @JoinColumn(name = "user_id"),
           inverseJoinColumns = @JoinColumn(name = "role_id"))
   private Set<Role> roles = new HashSet<>();
+
+  private boolean emailVerified = false;
+
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private Set<VerificationCode> verificationCodes = new HashSet<>();
 }
