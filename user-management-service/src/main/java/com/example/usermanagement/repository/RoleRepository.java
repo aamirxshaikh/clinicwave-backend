@@ -1,7 +1,7 @@
 package com.example.usermanagement.repository;
 
-import com.example.usermanagement.model.enums.ERole;
 import com.example.usermanagement.model.entity.Role;
+import com.example.usermanagement.model.enums.ERole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -3,11 +3,11 @@ package com.example.usermanagement.mapper;
 import com.example.usermanagement.model.dto.UserDto;
 import com.example.usermanagement.model.entity.Role;
 import com.example.usermanagement.model.entity.User;
-import java.util.Collections;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 

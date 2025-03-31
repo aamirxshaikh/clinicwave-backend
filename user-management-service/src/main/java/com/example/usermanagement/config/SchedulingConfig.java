@@ -13,11 +13,11 @@ import java.time.LocalDateTime;
 @EnableScheduling
 @RequiredArgsConstructor
 public class SchedulingConfig {
-    private final VerificationCodeRepository verificationCodeRepository;
+  private final VerificationCodeRepository verificationCodeRepository;
 
-    @Scheduled(cron = "0 0 * * * *") // Run every hour
-    @Transactional
-    public void cleanupExpiredVerificationCodes() {
-        verificationCodeRepository.deleteExpiredCodes(LocalDateTime.now());
-    }
+  @Scheduled(cron = "0 0 * * * *") // Run every hour
+  @Transactional
+  public void cleanupExpiredVerificationCodes() {
+    verificationCodeRepository.deleteExpiredCodes(LocalDateTime.now());
+  }
 } 

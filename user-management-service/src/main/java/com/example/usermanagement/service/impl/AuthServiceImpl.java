@@ -1,13 +1,13 @@
 package com.example.usermanagement.service.impl;
 
 import com.example.usermanagement.exception.InvalidRoleException;
-import com.example.usermanagement.model.response.JwtResponse;
-import com.example.usermanagement.model.request.LoginRequest;
-import com.example.usermanagement.model.response.MessageResponse;
-import com.example.usermanagement.model.request.RegisterRequest;
-import com.example.usermanagement.model.enums.ERole;
 import com.example.usermanagement.model.entity.Role;
 import com.example.usermanagement.model.entity.User;
+import com.example.usermanagement.model.enums.ERole;
+import com.example.usermanagement.model.request.LoginRequest;
+import com.example.usermanagement.model.request.RegisterRequest;
+import com.example.usermanagement.model.response.JwtResponse;
+import com.example.usermanagement.model.response.MessageResponse;
 import com.example.usermanagement.repository.RoleRepository;
 import com.example.usermanagement.repository.UserRepository;
 import com.example.usermanagement.security.JwtUtils;
