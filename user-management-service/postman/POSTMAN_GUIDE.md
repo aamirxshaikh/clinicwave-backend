@@ -6,7 +6,7 @@ This guide explains how to use the Postman collection for testing the User Manag
 
 1. Open Postman
 2. Click on "Import" button
-3. Select the file `User_Management_API.postman_collection.json`
+3. Select the file `Clinicwave_API.postman_collection.json`
 4. The collection will be imported with all pre-configured requests
 
 ## Testing Workflow
@@ -33,9 +33,15 @@ The API uses JWT authentication. To test protected endpoints, you need to:
 
 ### Step 3: Test the Endpoints
 
+#### Test Endpoints
+- **Public Content**: Accessible to anyone
+- **User Content**: Accessible to users with ROLE_USER
+- **Moderator Content**: Accessible to users with ROLE_MODERATOR
+- **Admin Content**: Accessible to users with ROLE_ADMIN
+
 #### Authentication Endpoints
-- **Register User**: Creates a new user with ROLE_USER
-- **Register Admin**: Creates a new user with ROLE_ADMIN
+- **Register User**: Creates a new user with ROLE_USER and sends a verification email
+- **Register Admin**: Creates a new user with ROLE_ADMIN and sends a verification email
 - **Login as User**: Authenticates a regular user and returns a JWT token
 - **Login as Admin**: Authenticates an admin user and returns a JWT token
 
@@ -48,11 +54,9 @@ The API uses JWT authentication. To test protected endpoints, you need to:
 - **Change Password**: Admin or same user - changes user password
 - **Delete User**: Admin only - deletes a user
 
-#### Test Endpoints
-- **Public Content**: Accessible to anyone
-- **User Content**: Accessible to users with ROLE_USER
-- **Moderator Content**: Accessible to users with ROLE_MODERATOR
-- **Admin Content**: Accessible to users with ROLE_ADMIN
+#### Email Verification Endpoints
+- **Verify Email**: Verifies the user's email address
+- **Resend Verification Email**: Resends the verification email to the user
 
 ## Request Body Examples
 
@@ -100,6 +104,20 @@ The API uses JWT authentication. To test protected endpoints, you need to:
   "roles": ["ROLE_USER", "ROLE_MODERATOR"]
 }
 ```
+
+### Verify Email
+**Request Body:**
+```json
+{
+    "email": "testuser@example.com",
+    "code": "940086"
+}
+```
+
+### Resend Verification Email
+**Query Parameters:**
+
+- `email` (string, required) - The email address to resend the verification code to
 
 ## Tips for Testing
 

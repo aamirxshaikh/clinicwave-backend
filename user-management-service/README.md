@@ -143,4 +143,4 @@ Content-Type: application/json
 ### Postman Documentation
 
 - [Postman Guide](./postman/POSTMAN_GUIDE.md) - Contains instructions on how to import and use the Postman collection for testing API endpoints.
-- [Postman Collection](./postman/User_Management_API.postman_collection.json) - A Postman collection with pre-configured API requests for easy testing of the User Management Service.
+- [Postman Collection](./postman/Clinicwave_API.postman_collection.json) - A Postman collection with pre-configured API requests for easy testing of the User Management Service.
