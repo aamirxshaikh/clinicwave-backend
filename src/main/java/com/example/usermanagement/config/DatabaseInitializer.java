@@ -59,6 +59,7 @@ public class DatabaseInitializer implements CommandLineRunner {
               .lastName("User")
               .enabled(true)
               .roles(roles)
+              .emailVerified(true)
               .build();
 
       userRepository.save(admin);
