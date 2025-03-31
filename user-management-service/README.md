@@ -14,8 +14,8 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 
 ## Technology Stack
 
-- Java 17
-- Spring Boot 3.2.4
+- Java 21
+- Spring Boot 3.4.4
 - Spring Security
 - Spring Data JPA
 - PostgreSQL
@@ -143,10 +143,3 @@ Content-Type: application/json
   "confirmPassword": "newPassword123"
 }
 ```
-
-### Postman Documentation
-
-- [Postman Guide](./postman/POSTMAN_GUIDE.md) - Contains instructions on how to import and use the Postman collection
-  for testing API endpoints.
-- [Postman Collection](./postman/Clinicwave_API.postman_collection.json) - A Postman collection with pre-configured API
-  requests for easy testing of the User Management Service.
