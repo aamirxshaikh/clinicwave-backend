@@ -4,15 +4,15 @@ import com.example.usermanagement.annotation.RateLimit;
 import com.example.usermanagement.model.dto.UserDto;
 import com.example.usermanagement.model.request.ChangePasswordRequest;
 import com.example.usermanagement.model.request.UpdateUserRequest;
+import com.example.usermanagement.model.request.UserParamsRequest;
 import com.example.usermanagement.model.response.MessageResponse;
+import com.example.usermanagement.model.response.PageResponse;
 import com.example.usermanagement.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -21,9 +21,8 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping
-  @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<UserDto>> getAllUsers() {
-    return ResponseEntity.ok(userService.getAllUsers());
+  public ResponseEntity<PageResponse<UserDto>> getAllUsers(UserParamsRequest paramsRequest) {
+    return ResponseEntity.ok(userService.getAllUsers(paramsRequest));
   }
 
   @GetMapping("/{id}")

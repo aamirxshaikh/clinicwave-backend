@@ -3,11 +3,11 @@ package com.example.usermanagement.service;
 import com.example.usermanagement.model.dto.UserDto;
 import com.example.usermanagement.model.request.ChangePasswordRequest;
 import com.example.usermanagement.model.request.UpdateUserRequest;
-
-import java.util.List;
+import com.example.usermanagement.model.request.UserParamsRequest;
+import com.example.usermanagement.model.response.PageResponse;
 
 public interface UserService {
-  List<UserDto> getAllUsers();
+  PageResponse<UserDto> getAllUsers(UserParamsRequest paramsRequest);
 
   UserDto getUserById(Long id);
 

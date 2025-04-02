@@ -10,12 +10,19 @@ import com.example.usermanagement.model.entity.User;
 import com.example.usermanagement.model.enums.ERole;
 import com.example.usermanagement.model.request.ChangePasswordRequest;
 import com.example.usermanagement.model.request.UpdateUserRequest;
+import com.example.usermanagement.model.request.UserParamsRequest;
+import com.example.usermanagement.model.response.PageResponse;
 import com.example.usermanagement.repository.RoleRepository;
 import com.example.usermanagement.repository.UserRepository;
 import com.example.usermanagement.repository.VerificationCodeRepository;
 import com.example.usermanagement.service.UserService;
+import com.example.usermanagement.specification.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,10 +44,48 @@ public class UserServiceImpl implements UserService {
   private final UserMapper userMapper;
 
   @Override
-  public List<UserDto> getAllUsers() {
-    return userRepository.findAll().stream()
+  public PageResponse<UserDto> getAllUsers(UserParamsRequest paramsRequest) {
+    // Create specification for filtering
+    Specification<User> specification = UserSpecification.createSpecification(
+            paramsRequest.getUsername(),
+            paramsRequest.getEmail(),
+            paramsRequest.getFirstName(),
+            paramsRequest.getLastName(),
+            paramsRequest.getEnabled(),
+            paramsRequest.getEmailVerified()
+    );
+
+    // Create sort object
+    Sort sort = Sort.by(
+            paramsRequest.getSortDirection().equalsIgnoreCase("desc") ?
+                    Sort.Direction.DESC : Sort.Direction.ASC,
+            paramsRequest.getSortBy()
+    );
+
+    // Create pageable object
+    PageRequest pageRequest = PageRequest.of(
+            paramsRequest.getPage(),
+            paramsRequest.getSize(),
+            sort
+    );
+
+    // Execute the query
+    Page<User> userPage = userRepository.findAll(specification, pageRequest);
+
+    // Map to DTOs and create response
+    List<UserDto> userDtoList = userPage.getContent().stream()
             .map(userMapper::userToUserDto)
             .toList();
+
+    return PageResponse.<UserDto>builder()
+            .content(userDtoList)
+            .pageNumber(userPage.getNumber())
+            .pageSize(userPage.getSize())
+            .totalElements(userPage.getTotalElements())
+            .totalPages(userPage.getTotalPages())
+            .last(userPage.isLast())
+            .first(userPage.isFirst())
+            .build();
   }
 
   @Override
