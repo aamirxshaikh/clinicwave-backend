@@ -11,6 +11,11 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 - Password Management
 - Exception Handling
 - Data Validation
+- Advanced User List Features:
+  - Pagination
+  - Sorting
+  - Filtering
+  - Dynamic Querying
 
 ## Technology Stack
 
@@ -31,7 +36,21 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 
 ### User Management
 
-- **GET /api/v1/users** - Get all users (Admin only)
+- **GET /api/v1/users** - Get all users with pagination, sorting, and filtering (Admin only)
+  - Query Parameters:
+    - Filtering:
+      - `username` (optional) - Filter by username (case-insensitive partial match)
+      - `email` (optional) - Filter by email (case-insensitive partial match)
+      - `firstName` (optional) - Filter by first name (case-insensitive partial match)
+      - `lastName` (optional) - Filter by last name (case-insensitive partial match)
+      - `enabled` (optional) - Filter by enabled status
+      - `emailVerified` (optional) - Filter by email verification status
+    - Pagination:
+      - `page` (default: 0) - Page number (0-based)
+      - `size` (default: 10) - Number of items per page
+    - Sorting:
+      - `sortBy` (default: "id") - Field to sort by
+      - `sortDirection` (default: "asc") - Sort direction ("asc" or "desc")
 - **GET /api/v1/users/{id}** - Get user by ID (Admin or same user)
 - **GET /api/v1/users/me** - Get current user profile
 - **PUT /api/v1/users/{id}** - Update user (Admin or same user)
@@ -113,6 +132,43 @@ Content-Type: application/json
 {
   "username": "user1",
   "password": "password123"
+}
+```
+
+### Get all users with pagination and sorting
+
+```http
+GET /api/v1/users?page=0&size=10&sortBy=lastName&sortDirection=desc&username=john&enabled=true
+Authorization: Bearer {jwt_token}
+```
+
+Response:
+```json
+{
+    "content": [
+        {
+            "id": 1,
+            "username": "john",
+            "email": "john@example.com",
+            "firstName": "John",
+            "lastName": "Doe",
+            "enabled": true,
+            "roles": ["ROLE_USER"]
+        }
+        // ... more users
+    ],
+    "pageNumber": 0,
+    "pageSize": 10,
+    "totalElements": 25,
+    "totalPages": 3,
+    "last": false,
+    "first": true,
+    "empty": false,
+    "numberOfElements": 10,
+    "hasNext": true,
+    "hasPrevious": false,
+    "nextPage": 1,
+    "previousPage": -1
 }
 ```
 
