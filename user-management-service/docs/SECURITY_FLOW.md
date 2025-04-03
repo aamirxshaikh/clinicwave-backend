@@ -205,12 +205,12 @@ When a regular user tries to access an admin-only protected endpoint:
 
 1. **AuthController**
     - Purpose: Handles authentication endpoints (login, register)
-    - Location: `com.example.usermanagement.controller.AuthController`
+    - Location: `com.example.usermanagementservice.controller.AuthController`
     - Key methods: `authenticateUser()`, `registerUser()`
 
 2. **WebSecurityConfig**
     - Purpose: Central security configuration for the application
-    - Location: `com.example.usermanagement.security.WebSecurityConfig`
+    - Location: `com.example.usermanagementservice.security.WebSecurityConfig`
     - Key functions:
         - Configures authentication manager
         - Sets up security filter chain
@@ -219,7 +219,7 @@ When a regular user tries to access an admin-only protected endpoint:
 
 3. **JwtUtils**
     - Purpose: Manages JWT token operations
-    - Location: `com.example.usermanagement.security.JwtUtils`
+    - Location: `com.example.usermanagementservice.security.JwtUtils`
     - Key methods:
         - `generateJwtToken()`: Creates new tokens after successful authentication
         - `validateJwtToken()`: Verifies token integrity and expiration
@@ -227,46 +227,46 @@ When a regular user tries to access an admin-only protected endpoint:
 
 4. **AuthTokenFilter**
     - Purpose: Intercepts HTTP requests to validate JWT tokens
-    - Location: `com.example.usermanagement.security.AuthTokenFilter`
+    - Location: `com.example.usermanagementservice.security.AuthTokenFilter`
     - Key method: `doFilterInternal()`: Processes each HTTP request to extract/validate JWT
 
 5. **UserDetailsServiceImpl**
     - Purpose: Loads user data from the database for authentication
-    - Location: `com.example.usermanagement.security.service.UserDetailsServiceImpl`
+    - Location: `com.example.usermanagementservice.security.service.UserDetailsServiceImpl`
     - Key method: `loadUserByUsername()`: Fetches user data for authentication
 
 6. **UserDetailsImpl**
     - Purpose: Adapts the user model to Spring Security's user representation
-    - Location: `com.example.usermanagement.security.service.UserDetailsImpl`
+    - Location: `com.example.usermanagementservice.security.service.UserDetailsImpl`
     - Key methods: `getAuthorities()`, `getPassword()`, `getUsername()`
 
 ### Rate Limiting Classes
 
 1. **RateLimit**
     - Purpose: Annotation to specify rate limiting parameters
-    - Location: `com.example.usermanagement.annotation.RateLimit`
+    - Location: `com.example.usermanagementservice.annotation.RateLimit`
     - Key attributes: `limit`, `duration`, `keyType`
 
 2. **RateLimitingAspect**
     - Purpose: Implements rate limiting logic using AOP
-    - Location: `com.example.usermanagement.aop.RateLimitingAspect`
+    - Location: `com.example.usermanagementservice.aop.RateLimitingAspect`
     - Key method: `enforceRateLimit()`: Intercepts annotated methods to apply rate limiting
 
 3. **RateLimiterService**
     - Purpose: Tracks request counts and enforces limits
-    - Location: `com.example.usermanagement.service.RateLimiterService`
+    - Location: `com.example.usermanagementservice.service.RateLimiterService`
     - Key methods: `checkRateLimit()`, `incrementCounter()`
 
 ### Error Handling Classes
 
 1. **AuthEntryPointJwt**
     - Purpose: Handles unauthorized authentication attempts
-    - Location: `com.example.usermanagement.security.AuthEntryPointJwt`
+    - Location: `com.example.usermanagementservice.security.AuthEntryPointJwt`
     - Key method: `commence()`: Triggered when authentication fails
 
 2. **GlobalExceptionHandler**
     - Purpose: Centralizes exception handling
-    - Location: `com.example.usermanagement.exception.GlobalExceptionHandler`
+    - Location: `com.example.usermanagementservice.exception.GlobalExceptionHandler`
     - Key methods: Error handlers for various exceptions
 
 ## Understanding the Sequential Logic
