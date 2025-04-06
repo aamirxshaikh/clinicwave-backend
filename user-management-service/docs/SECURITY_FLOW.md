@@ -205,12 +205,12 @@ When a regular user tries to access an admin-only protected endpoint:
 
 1. **AuthController**
     - Purpose: Handles authentication endpoints (login, register)
-    - Location: `com.example.usermanagementservice.controller.AuthController`
+    - Location: `controller.com.clinicwave.usermanagementservice.AuthController`
     - Key methods: `authenticateUser()`, `registerUser()`
 
 2. **WebSecurityConfig**
     - Purpose: Central security configuration for the application
-    - Location: `com.example.usermanagementservice.security.WebSecurityConfig`
+    - Location: `security.com.clinicwave.usermanagementservice.WebSecurityConfig`
     - Key functions:
         - Configures authentication manager
         - Sets up security filter chain
@@ -219,7 +219,7 @@ When a regular user tries to access an admin-only protected endpoint:
 
 3. **JwtUtils**
     - Purpose: Manages JWT token operations
-    - Location: `com.example.usermanagementservice.security.JwtUtils`
+    - Location: `security.com.clinicwave.usermanagementservice.JwtUtils`
     - Key methods:
         - `generateJwtToken()`: Creates new tokens after successful authentication
         - `validateJwtToken()`: Verifies token integrity and expiration
@@ -227,46 +227,46 @@ When a regular user tries to access an admin-only protected endpoint:
 
 4. **AuthTokenFilter**
     - Purpose: Intercepts HTTP requests to validate JWT tokens
-    - Location: `com.example.usermanagementservice.security.AuthTokenFilter`
+    - Location: `security.com.clinicwave.usermanagementservice.AuthTokenFilter`
     - Key method: `doFilterInternal()`: Processes each HTTP request to extract/validate JWT
 
 5. **UserDetailsServiceImpl**
     - Purpose: Loads user data from the database for authentication
-    - Location: `com.example.usermanagementservice.security.service.UserDetailsServiceImpl`
+    - Location: `service.security.com.clinicwave.usermanagementservice.UserDetailsServiceImpl`
     - Key method: `loadUserByUsername()`: Fetches user data for authentication
 
 6. **UserDetailsImpl**
     - Purpose: Adapts the user model to Spring Security's user representation
-    - Location: `com.example.usermanagementservice.security.service.UserDetailsImpl`
+    - Location: `service.security.com.clinicwave.usermanagementservice.UserDetailsImpl`
     - Key methods: `getAuthorities()`, `getPassword()`, `getUsername()`
 
 ### Rate Limiting Classes
 
 1. **RateLimit**
     - Purpose: Annotation to specify rate limiting parameters
-    - Location: `com.example.usermanagementservice.annotation.RateLimit`
+    - Location: `annotation.com.clinicwave.usermanagementservice.RateLimit`
     - Key attributes: `limit`, `duration`, `keyType`
 
 2. **RateLimitingAspect**
     - Purpose: Implements rate limiting logic using AOP
-    - Location: `com.example.usermanagementservice.aop.RateLimitingAspect`
+    - Location: `aop.com.clinicwave.usermanagementservice.RateLimitingAspect`
     - Key method: `enforceRateLimit()`: Intercepts annotated methods to apply rate limiting
 
 3. **RateLimiterService**
     - Purpose: Tracks request counts and enforces limits
-    - Location: `com.example.usermanagementservice.service.RateLimiterService`
+    - Location: `service.com.clinicwave.usermanagementservice.RateLimiterService`
     - Key methods: `checkRateLimit()`, `incrementCounter()`
 
 ### Error Handling Classes
 
 1. **AuthEntryPointJwt**
     - Purpose: Handles unauthorized authentication attempts
-    - Location: `com.example.usermanagementservice.security.AuthEntryPointJwt`
+    - Location: `security.com.clinicwave.usermanagementservice.AuthEntryPointJwt`
     - Key method: `commence()`: Triggered when authentication fails
 
 2. **GlobalExceptionHandler**
     - Purpose: Centralizes exception handling
-    - Location: `com.example.usermanagementservice.exception.GlobalExceptionHandler`
+    - Location: `exception.com.clinicwave.usermanagementservice.GlobalExceptionHandler`
     - Key methods: Error handlers for various exceptions
 
 ## Understanding the Sequential Logic
