@@ -5,14 +5,14 @@ import com.clinicwave.usermanagementservice.model.request.LoginRequest;
 import com.clinicwave.usermanagementservice.model.request.RegisterRequest;
 import com.clinicwave.usermanagementservice.model.response.JwtResponse;
 import com.clinicwave.usermanagementservice.model.response.MessageResponse;
+import com.clinicwave.usermanagementservice.model.response.RefreshTokenResponse;
+import com.clinicwave.usermanagementservice.security.service.UserDetailsImpl;
 import com.clinicwave.usermanagementservice.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -30,5 +30,16 @@ public class AuthController {
   @RateLimit(duration = 10, prefix = "rate:register")
   public ResponseEntity<MessageResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
     return ResponseEntity.ok(authService.registerUser(registerRequest));
+  }
+
+  @PostMapping("/refresh-token")
+  @RateLimit(prefix = "rate:refresh")
+  public ResponseEntity<RefreshTokenResponse> refreshToken(@RequestHeader("Refresh-Token") String refreshToken) {
+    return ResponseEntity.ok(authService.refreshToken(refreshToken));
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<MessageResponse> logoutUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    return ResponseEntity.ok(authService.logoutUser(userDetails.getId()));
   }
 }

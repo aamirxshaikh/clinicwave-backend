@@ -34,9 +34,12 @@ public class JwtUtils {
 
   public String generateJwtToken(Authentication authentication) {
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    return generateTokenFromUsername(userPrincipal.getUsername());
+  }
 
+  public String generateTokenFromUsername(String username) {
     return Jwts.builder()
-            .subject(userPrincipal.getUsername())
+            .subject(username)
             .issuedAt(new Date())
             .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
             .signWith(key())
