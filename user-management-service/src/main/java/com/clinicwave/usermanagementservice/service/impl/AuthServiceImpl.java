@@ -1,6 +1,7 @@
 package com.clinicwave.usermanagementservice.service.impl;
 
 import com.clinicwave.usermanagementservice.exception.InvalidRoleException;
+import com.clinicwave.usermanagementservice.exception.RefreshTokenException;
 import com.clinicwave.usermanagementservice.model.entity.Role;
 import com.clinicwave.usermanagementservice.model.entity.User;
 import com.clinicwave.usermanagementservice.model.enums.ERole;
@@ -8,12 +9,14 @@ import com.clinicwave.usermanagementservice.model.request.LoginRequest;
 import com.clinicwave.usermanagementservice.model.request.RegisterRequest;
 import com.clinicwave.usermanagementservice.model.response.JwtResponse;
 import com.clinicwave.usermanagementservice.model.response.MessageResponse;
+import com.clinicwave.usermanagementservice.model.response.RefreshTokenResponse;
 import com.clinicwave.usermanagementservice.repository.RoleRepository;
 import com.clinicwave.usermanagementservice.repository.UserRepository;
 import com.clinicwave.usermanagementservice.security.JwtUtils;
 import com.clinicwave.usermanagementservice.security.service.UserDetailsImpl;
 import com.clinicwave.usermanagementservice.service.AuthService;
 import com.clinicwave.usermanagementservice.service.EmailVerificationService;
+import com.clinicwave.usermanagementservice.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
   private final EmailVerificationService emailVerificationService;
+  private final RefreshTokenService refreshTokenService;
   private final PasswordEncoder encoder;
   private final JwtUtils jwtUtils;
 
@@ -47,6 +51,9 @@ public class AuthServiceImpl implements AuthService {
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
+    String refreshToken = jwtUtils.generateRefreshToken(loginRequest.username());
+
+    refreshTokenService.storeRefreshToken(loginRequest.username(), refreshToken, jwtUtils.getRefreshExpirationMs());
 
     UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
     List<String> roles = userDetails.getAuthorities().stream()
@@ -55,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
     return new JwtResponse(
             jwt,
+            refreshToken,
             "Bearer",
             userDetails.getId(),
             userDetails.getUsername(),
@@ -114,5 +122,20 @@ public class AuthServiceImpl implements AuthService {
     emailVerificationService.sendVerificationEmail(user.getEmail());
 
     return new MessageResponse("User registered successfully! Please check your email to verify your account.");
+  }
+
+  @Override
+  public RefreshTokenResponse refreshToken(String refreshToken) {
+    if (!jwtUtils.validateJwtToken(refreshToken)) {
+      throw new RefreshTokenException("Refresh token is invalid or expired.");
+    }
+
+    String username = jwtUtils.getUserNameFromJwtToken(refreshToken);
+    if (!refreshTokenService.validateRefreshToken(username, refreshToken)) {
+      throw new RefreshTokenException("Refresh token does not match stored token.");
+    }
+
+    String newAccessToken = jwtUtils.generateTokenFromUsername(username);
+    return new RefreshTokenResponse(newAccessToken, refreshToken, "Bearer");
   }
 }

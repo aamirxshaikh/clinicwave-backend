@@ -181,6 +181,22 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
   }
 
+  @ExceptionHandler(RefreshTokenException.class)
+  public ResponseEntity<ErrorResponse> handleTokenRefreshException(
+          RefreshTokenException ex, WebRequest request) {
+
+    log.error("Token refresh exception: {}", ex.getMessage());
+
+    ErrorResponse errorResponse = ErrorResponse.builder()
+            .status(HttpStatus.FORBIDDEN.getReasonPhrase())
+            .statusCode(HttpStatus.FORBIDDEN.value())
+            .message(ex.getMessage())
+            .path(getPath(request))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+  }
+
   @ExceptionHandler(BadCredentialsException.class)
   public ResponseEntity<ErrorResponse> handleBadCredentialsException(
           BadCredentialsException ex, WebRequest request) {

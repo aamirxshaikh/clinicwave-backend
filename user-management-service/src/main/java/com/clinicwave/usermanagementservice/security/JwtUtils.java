@@ -8,6 +8,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,10 @@ public class JwtUtils {
   @Value("${app.jwt.expiration}")
   private int jwtExpirationMs;
 
+  @Getter
+  @Value("${app.jwt.refresh-expiration}")
+  private long refreshExpirationMs;
+
   @Value("${app.jwt.header}")
   private String jwtHeader;
 
@@ -35,10 +40,24 @@ public class JwtUtils {
   public String generateJwtToken(Authentication authentication) {
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
+    String username = userPrincipal.getUsername();
+    return generateTokenFromUsername(username);
+  }
+
+  public String generateTokenFromUsername(String username) {
     return Jwts.builder()
-            .subject(userPrincipal.getUsername())
+            .subject(username)
             .issuedAt(new Date())
             .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
+            .signWith(key())
+            .compact();
+  }
+
+  public String generateRefreshToken(String username) {
+    return Jwts.builder()
+            .subject(username)
+            .issuedAt(new Date())
+            .expiration(new Date((new Date()).getTime() + refreshExpirationMs))
             .signWith(key())
             .compact();
   }
