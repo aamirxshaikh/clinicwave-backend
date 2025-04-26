@@ -4,6 +4,7 @@ import com.clinicwave.usermanagementservice.exception.ResourceNotFoundException;
 import com.clinicwave.usermanagementservice.model.entity.User;
 import com.clinicwave.usermanagementservice.repository.UserRepository;
 import com.clinicwave.usermanagementservice.security.service.UserDetailsImpl;
+import com.clinicwave.usermanagementservice.service.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
+  private final TokenBlacklistService tokenBlacklistService;
   private final JwtUtils jwtUtils;
   private final UserRepository userRepository;
 
@@ -31,7 +33,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
           throws ServletException, IOException {
     try {
       String jwt = jwtUtils.parseJwt(request);
-      if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+      if (jwt != null && jwtUtils.validateJwtToken(jwt)
+              && !tokenBlacklistService.isTokenBlacklisted(jwt)) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));

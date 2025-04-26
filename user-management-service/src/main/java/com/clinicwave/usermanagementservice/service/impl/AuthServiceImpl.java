@@ -17,6 +17,7 @@ import com.clinicwave.usermanagementservice.security.service.UserDetailsImpl;
 import com.clinicwave.usermanagementservice.service.AuthService;
 import com.clinicwave.usermanagementservice.service.EmailVerificationService;
 import com.clinicwave.usermanagementservice.service.RefreshTokenService;
+import com.clinicwave.usermanagementservice.service.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
   private final RoleRepository roleRepository;
   private final EmailVerificationService emailVerificationService;
   private final RefreshTokenService refreshTokenService;
+  private final TokenBlacklistService tokenBlacklistService;
   private final PasswordEncoder encoder;
   private final JwtUtils jwtUtils;
 
@@ -137,5 +139,27 @@ public class AuthServiceImpl implements AuthService {
 
     String newAccessToken = jwtUtils.generateTokenFromUsername(username);
     return new RefreshTokenResponse(newAccessToken, refreshToken, "Bearer");
+  }
+
+  @Override
+  public MessageResponse logout(String authHeader, String refreshToken) {
+    try {
+      String token = jwtUtils.getTokenFromHeader(authHeader);
+      if (token != null && jwtUtils.validateJwtToken(token) &&
+              !tokenBlacklistService.isTokenBlacklisted(token)) {
+        // Get username from access token
+        String username = jwtUtils.getUserNameFromJwtToken(token);
+        // Blacklist the access token
+        tokenBlacklistService.blacklistToken(token, jwtUtils.getJwtExpirationMs());
+        // Delete the refresh token from Redis
+        refreshTokenService.deleteRefreshToken(username);
+        // Clear the security context
+        SecurityContextHolder.clearContext();
+        return new MessageResponse("Logged out successfully");
+      }
+    } catch (Exception e) {
+      log.error("Error during logout: {}", e.getMessage());
+    }
+    return new MessageResponse("Logout failed");
   }
 }

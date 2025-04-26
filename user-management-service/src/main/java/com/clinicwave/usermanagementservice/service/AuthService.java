@@ -12,4 +12,6 @@ public interface AuthService {
   MessageResponse registerUser(RegisterRequest registerRequest);
 
   RefreshTokenResponse refreshToken(String refreshToken);
+
+  MessageResponse logout(String authHeader, String refreshToken);
 }

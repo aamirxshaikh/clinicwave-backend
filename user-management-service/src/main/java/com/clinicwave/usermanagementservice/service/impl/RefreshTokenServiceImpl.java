@@ -17,7 +17,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   @Override
   public void storeRefreshToken(String username, String refreshToken, long expiryMs) {
     String key = buildKey(username);
-    if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+    if (redisTemplate.hasKey(key)) {
       throw new RefreshTokenException("User already has an active session. Please logout first.");
     }
     ValueOperations<String, String> ops = redisTemplate.opsForValue();

@@ -24,6 +24,7 @@ public class JwtUtils {
   @Value("${app.jwt.secret}")
   private String jwtSecret;
 
+  @Getter
   @Value("${app.jwt.expiration}")
   private int jwtExpirationMs;
 
@@ -89,10 +90,13 @@ public class JwtUtils {
   }
 
   public String parseJwt(HttpServletRequest request) {
-    String headerAuth = request.getHeader(jwtHeader);
+    String authHeader = request.getHeader(jwtHeader);
+    return getTokenFromHeader(authHeader);
+  }
 
-    if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(jwtPrefix)) {
-      return headerAuth.substring(jwtPrefix.length()).trim();
+  public String getTokenFromHeader(String authHeader) {
+    if (StringUtils.hasText(authHeader) && authHeader.startsWith(jwtPrefix)) {
+      return authHeader.substring((jwtPrefix + " ").length());
     }
 
     return null;
