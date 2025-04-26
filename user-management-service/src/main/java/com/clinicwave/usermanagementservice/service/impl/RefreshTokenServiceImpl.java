@@ -1,5 +1,6 @@
 package com.clinicwave.usermanagementservice.service.impl;
 
+import com.clinicwave.usermanagementservice.exception.RefreshTokenException;
 import com.clinicwave.usermanagementservice.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -15,8 +16,12 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
   @Override
   public void storeRefreshToken(String username, String refreshToken, long expiryMs) {
+    String key = buildKey(username);
+    if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+      throw new RefreshTokenException("User already has an active session. Please logout first.");
+    }
     ValueOperations<String, String> ops = redisTemplate.opsForValue();
-    ops.set(buildKey(username), refreshToken, expiryMs, TimeUnit.MILLISECONDS);
+    ops.set(key, refreshToken, expiryMs, TimeUnit.MILLISECONDS);
   }
 
   @Override
