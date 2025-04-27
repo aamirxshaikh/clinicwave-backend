@@ -44,6 +44,8 @@ The API uses JWT authentication. To test protected endpoints, you need to:
 - **Register Admin**: Creates a new user with ROLE_ADMIN and sends a verification email
 - **Login as User**: Authenticates a regular user and returns a JWT token
 - **Login as Admin**: Authenticates an admin user and returns a JWT token
+- **Refresh Token**: Refreshes the JWT token using a refresh token
+- **Logout**: Invalidates the JWT token
 
 #### User Management Endpoints
 - **Get All Users**: Admin only - retrieves all users
@@ -57,67 +59,6 @@ The API uses JWT authentication. To test protected endpoints, you need to:
 #### Email Verification Endpoints
 - **Verify Email**: Verifies the user's email address
 - **Resend Verification Email**: Resends the verification email to the user
-
-## Request Body Examples
-
-### Register User
-```json
-{
-  "username": "testuser",
-  "email": "testuser@example.com",
-  "password": "password123",
-  "firstName": "Test",
-  "lastName": "User",
-  "roles": ["ROLE_USER"]
-}
-```
-
-### Login
-```json
-{
-  "username": "testuser",
-  "password": "password123"
-}
-```
-
-### Update User
-```json
-{
-  "firstName": "Updated",
-  "lastName": "User",
-  "email": "updated-user@example.com"
-}
-```
-
-### Change Password
-```json
-{
-  "currentPassword": "password123",
-  "newPassword": "newPassword123",
-  "confirmPassword": "newPassword123"
-}
-```
-
-### Update User Roles
-```json
-{
-  "roles": ["ROLE_USER", "ROLE_MODERATOR"]
-}
-```
-
-### Verify Email
-**Request Body:**
-```json
-{
-    "email": "testuser@example.com",
-    "code": "940086"
-}
-```
-
-### Resend Verification Email
-**Query Parameters:**
-
-- `email` (string, required) - The email address to resend the verification code to
 
 ## Tips for Testing
 

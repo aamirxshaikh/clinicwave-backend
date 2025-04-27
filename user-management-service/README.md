@@ -7,15 +7,49 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 - User Registration and Login
 - JWT Authentication
 - Role-Based Authorization
+- Rate Limiting
+- Refresh Token Management
+- Token blacklisting for secure logout
 - User Profile Management
 - Password Management
 - Exception Handling
 - Data Validation
 - Advanced User List Features:
-  - Pagination
-  - Sorting
-  - Filtering
-  - Dynamic Querying
+    - Pagination
+    - Sorting
+    - Filtering
+    - Dynamic Querying
+
+## Authentication Flow
+
+1. **Login**
+    - User provides credentials
+    - System validates credentials
+    - Returns JWT access token and refresh token
+    - Refresh token is stored in Redis with user session
+
+2. **Token Refresh**
+    - User provides refresh token
+    - System validates refresh token
+    - Returns new access token
+    - Maintains existing refresh token
+
+3. **Logout**
+    - User requests logout
+    - Access token is blacklisted in Redis
+    - Refresh token is deleted from Redis
+    - User session is terminated
+
+## Security Features
+
+- JWT-based authentication
+- Token blacklisting for secure logout
+- Session management with Redis
+- Role-based access control
+- Password hashing with BCrypt
+- CORS configuration
+- Rate limiting
+- Input validation
 
 ## Technology Stack
 
@@ -24,8 +58,10 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 - Spring Security
 - Spring Data JPA
 - PostgreSQL
+- Redis
 - JWT for stateless authentication
 - Maven
+- Docker
 
 ## API Endpoints
 
@@ -33,24 +69,26 @@ A complete Spring Boot REST API for user management with JWT authentication and 
 
 - **POST /api/v1/auth/register** - Register a new user
 - **POST /api/v1/auth/login** - Authenticate user and retrieve JWT token
+- **POST /api/v1/auth/refresh** - Refresh access token
+- **POST /api/v1/auth/logout** - User logout
 
 ### User Management
 
 - **GET /api/v1/users** - Get all users with pagination, sorting, and filtering (Admin only)
-  - Query Parameters:
-    - Filtering:
-      - `username` (optional) - Filter by username (case-insensitive partial match)
-      - `email` (optional) - Filter by email (case-insensitive partial match)
-      - `firstName` (optional) - Filter by first name (case-insensitive partial match)
-      - `lastName` (optional) - Filter by last name (case-insensitive partial match)
-      - `enabled` (optional) - Filter by enabled status
-      - `emailVerified` (optional) - Filter by email verification status
-    - Pagination:
-      - `page` (default: 0) - Page number (0-based)
-      - `size` (default: 10) - Number of items per page
-    - Sorting:
-      - `sortBy` (default: "id") - Field to sort by
-      - `sortDirection` (default: "asc") - Sort direction ("asc" or "desc")
+    - Query Parameters:
+        - Filtering:
+            - `username` (optional) - Filter by username (case-insensitive partial match)
+            - `email` (optional) - Filter by email (case-insensitive partial match)
+            - `firstName` (optional) - Filter by first name (case-insensitive partial match)
+            - `lastName` (optional) - Filter by last name (case-insensitive partial match)
+            - `enabled` (optional) - Filter by enabled status
+            - `emailVerified` (optional) - Filter by email verification status
+        - Pagination:
+            - `page` (default: 0) - Page number (0-based)
+            - `size` (default: 10) - Number of items per page
+        - Sorting:
+            - `sortBy` (default: "id") - Field to sort by
+            - `sortDirection` (default: "asc") - Sort direction ("asc" or "desc")
 - **GET /api/v1/users/{id}** - Get user by ID (Admin or same user)
 - **GET /api/v1/users/me** - Get current user profile
 - **PUT /api/v1/users/{id}** - Update user (Admin or same user)
@@ -143,32 +181,35 @@ Authorization: Bearer {jwt_token}
 ```
 
 Response:
+
 ```json
 {
-    "content": [
-        {
-            "id": 1,
-            "username": "john",
-            "email": "john@example.com",
-            "firstName": "John",
-            "lastName": "Doe",
-            "enabled": true,
-            "roles": ["ROLE_USER"]
-        }
-        // ... more users
-    ],
-    "pageNumber": 0,
-    "pageSize": 10,
-    "totalElements": 25,
-    "totalPages": 3,
-    "last": false,
-    "first": true,
-    "empty": false,
-    "numberOfElements": 10,
-    "hasNext": true,
-    "hasPrevious": false,
-    "nextPage": 1,
-    "previousPage": -1
+  "content": [
+    {
+      "id": 1,
+      "username": "john",
+      "email": "john@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "enabled": true,
+      "roles": [
+        "ROLE_USER"
+      ]
+    }
+    // ... more users
+  ],
+  "pageNumber": 0,
+  "pageSize": 10,
+  "totalElements": 25,
+  "totalPages": 3,
+  "last": false,
+  "first": true,
+  "empty": false,
+  "numberOfElements": 10,
+  "hasNext": true,
+  "hasPrevious": false,
+  "nextPage": 1,
+  "previousPage": -1
 }
 ```
 
