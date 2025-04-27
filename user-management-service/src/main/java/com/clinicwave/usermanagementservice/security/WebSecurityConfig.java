@@ -55,13 +55,9 @@ public class WebSecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
                     auth.requestMatchers("/auth/**").permitAll()
-                            .requestMatchers("/h2-console/**").permitAll()
                             .requestMatchers("/test/**").permitAll()
                             .anyRequest().authenticated()
             );
-
-    // Fix for H2 console
-    http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
