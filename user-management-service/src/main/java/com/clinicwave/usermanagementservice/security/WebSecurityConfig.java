@@ -47,7 +47,7 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2SuccessHandler customOAuth2SuccessHandler) throws Exception {
     http
             .csrf(AbstractHttpConfigurer::disable)
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
@@ -59,7 +59,7 @@ public class WebSecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                     .loginPage("/login")
-                    .defaultSuccessUrl("/api/v1/oauth2/success")
+                    .successHandler(customOAuth2SuccessHandler)
                     .failureUrl("/api/v1/oauth2/failure")
             );
 
