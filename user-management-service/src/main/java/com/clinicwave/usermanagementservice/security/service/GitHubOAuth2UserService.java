@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ import java.util.Set;
 public class GitHubOAuth2UserService extends DefaultOAuth2UserService {
   private final UserRepository userRepository;
   private final RoleRepository roleRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   @Transactional
@@ -38,13 +41,21 @@ public class GitHubOAuth2UserService extends DefaultOAuth2UserService {
     String username = (String) attributes.get("login");
     String name = (String) attributes.get("name");
 
+    // If email is null, use a placeholder email
+    if (email == null) {
+      email = username + "@github.com";
+    }
+
+    String finalEmail = email;
+
     // Check if user exists
     User user = userRepository.findByEmail(email)
             .orElseGet(() -> {
               // Create new user if not exists
               User newUser = User.builder()
                       .username(username)
-                      .email(email)
+                      .email(finalEmail)
+                      .password(passwordEncoder.encode(UUID.randomUUID().toString())) // Generate a random password
                       .firstName(name != null ? name.split(" ")[0] : username)
                       .lastName(name != null && name.split(" ").length > 1 ? name.split(" ")[1] : "")
                       .enabled(true)
