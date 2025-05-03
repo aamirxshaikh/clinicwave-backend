@@ -53,9 +53,14 @@ public class WebSecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth ->
-                    auth.requestMatchers("/api/v1/auth/**").permitAll()
+                    auth.requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**", "/login/oauth2/**").permitAll()
                             .requestMatchers("/api/v1/test/**").permitAll()
                             .anyRequest().authenticated()
+            )
+            .oauth2Login(oauth2 -> oauth2
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/api/v1/oauth2/success")
+                    .failureUrl("/api/v1/oauth2/failure")
             );
 
     http.authenticationProvider(authenticationProvider());
