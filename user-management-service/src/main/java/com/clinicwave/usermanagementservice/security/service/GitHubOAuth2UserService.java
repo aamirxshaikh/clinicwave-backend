@@ -1,5 +1,6 @@
 package com.clinicwave.usermanagementservice.security.service;
 
+import com.clinicwave.usermanagementservice.exception.ResourceNotFoundException;
 import com.clinicwave.usermanagementservice.model.entity.Role;
 import com.clinicwave.usermanagementservice.model.entity.User;
 import com.clinicwave.usermanagementservice.model.enums.ERole;
@@ -7,13 +8,12 @@ import com.clinicwave.usermanagementservice.repository.RoleRepository;
 import com.clinicwave.usermanagementservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,24 +65,19 @@ public class GitHubOAuth2UserService extends DefaultOAuth2UserService {
               // Set default role
               Set<Role> roles = new HashSet<>();
               Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                      .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                      .orElseThrow(() -> new ResourceNotFoundException("Role", "name", ERole.ROLE_USER.toString()));
               roles.add(userRole);
               newUser.setRoles(roles);
 
               return userRepository.save(newUser);
             });
 
-    // Create UserDetails
-    UserDetailsImpl userDetails = UserDetailsImpl.build(user);
-
-    // Create authentication
-    Authentication authentication = new UsernamePasswordAuthenticationToken(
-            userDetails,
-            null,
-            userDetails.getAuthorities()
-    );
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-    return oAuth2User;
+    return new DefaultOAuth2User(
+            user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                    .toList(),
+            attributes,
+            userRequest.getClientRegistration().getProviderDetails()
+                    .getUserInfoEndpoint().getUserNameAttributeName());
   }
 }

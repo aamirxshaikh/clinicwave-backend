@@ -13,7 +13,7 @@ import java.io.IOException;
 public class CustomOAuth2SuccessHandler extends SavedRequestAwareAuthenticationSuccessHandler {
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
-    this.setDefaultTargetUrl("/api/v1/oauth2/success");
+    this.setDefaultTargetUrl("/api/v1/oauth2/callback");
     super.onAuthenticationSuccess(request, response, authentication);
   }
 }

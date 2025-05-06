@@ -1,5 +1,6 @@
 package com.clinicwave.usermanagementservice.security;
 
+import com.clinicwave.usermanagementservice.security.service.GitHubOAuth2UserService;
 import com.clinicwave.usermanagementservice.security.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -47,11 +48,11 @@ public class WebSecurityConfig {
   }
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2SuccessHandler customOAuth2SuccessHandler) throws Exception {
+  public SecurityFilterChain filterChain(HttpSecurity http, CustomOAuth2SuccessHandler customOAuth2SuccessHandler, GitHubOAuth2UserService gitHubOAuth2UserService) throws Exception {
     http
             .csrf(AbstractHttpConfigurer::disable)
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth ->
                     auth.requestMatchers("/api/v1/auth/**", "/api/v1/oauth2/**", "/login/oauth2/**").permitAll()
                             .requestMatchers("/api/v1/test/**").permitAll()
@@ -59,6 +60,8 @@ public class WebSecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2
                     .loginPage("/login")
+                    .userInfoEndpoint(userInfoEndpointConfig ->
+                            userInfoEndpointConfig.userService(gitHubOAuth2UserService))
                     .successHandler(customOAuth2SuccessHandler)
                     .failureUrl("/api/v1/oauth2/failure")
             );
